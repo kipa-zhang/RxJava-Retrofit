@@ -162,25 +162,27 @@ public class MainActivity extends AppCompatActivity {
 
         Subscriber<String> mySubscriber = new Subscriber<String>() {
             @Override
-            public void onCompleted() {
-                System.out.println("something is onCompleted!");
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-                System.out.println("something is wrong!");
-            }
-
-            @Override
             public void onNext(String s) {
                 System.out.println("mySubscriber(Thread):"+Thread.currentThread().getName());
                 System.out.println("info from Observable:"+s);
             }
+
+            @Override
+            public void onError(Throwable e) { System.out.println("something is wrong!"); }
+
+            @Override
+            public void onCompleted() {
+                System.out.println("it is onCompleted!");
+            }
         };
 
         myObservable
-                .filter(s -> s.endsWith("asd"))
+                .map(s -> {
+                    System.out.println(s);
+                    //map 出错，会执行到 error 方法
+                    int i = 1/0;
+                    return s;
+                })
                 .subscribe(mySubscriber);
     }
 
@@ -272,6 +274,9 @@ public class MainActivity extends AppCompatActivity {
 
         Observable.just("Hello,world! (Version 4)")
                 .map(s -> s + "For Test")
+                .map(s -> {
+                    return s;
+                })
                 .filter(s -> s.endsWith("asd"))
                 .subscribe(s -> System.out.println(s));
     }
